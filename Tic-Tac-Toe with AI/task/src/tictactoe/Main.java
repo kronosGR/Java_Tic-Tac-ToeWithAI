@@ -2,20 +2,24 @@ package tictactoe;
 
 import java.util.Scanner;
 
-class TicTacToe{
+class TicTacToe {
+
+    final String SpaceRead = "_";
+    final String SpaceWrite = " ";
     private String[] initialBoard;
     private Scanner sc;
+    private String turn;
 
-    public String[] getInitialBoard() {
+    private String[] getInitialBoard() {
         return initialBoard;
     }
 
-    public void setInitialBoard(String[] initialBoard) {
+    private void setInitialBoard(String[] initialBoard) {
         this.initialBoard = initialBoard;
     }
 
 
-    public TicTacToe(){
+    public TicTacToe() {
         sc = new Scanner(System.in);
     }
 
@@ -37,16 +41,146 @@ class TicTacToe{
         System.out.println("---------");
     }
 
-    public void askBoard(){
+    public void askBoard() {
         System.out.print("Enter the cells: ");
-        String board = sc.nextLine();
+        initialBoard = sc.nextLine().split("");
     }
+
+    public static boolean isNumber(String str) {
+        if (str == null) {
+            return false;
+        }
+        try {
+            int d = Integer.parseInt(str);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    public int countP(String player) {
+        int total = 0;
+        for (int i = 0; i < this.initialBoard.length; i++) {
+            if (this.initialBoard[i].equals(player)) total++;
+        }
+        return total;
+    }
+
+    public boolean hasSpace() {
+        for (int i = 0; i < this.initialBoard.length; i++) {
+            if (this.initialBoard[i].equals(this.SpaceRead)) return true;
+        }
+        return false;
+    }
+
+    public boolean hasWon(String player) {
+        if (this.initialBoard[0].equals(player) && this.initialBoard[1].equals(player) && this.initialBoard[2].equals(player))
+            return true;
+        else if (this.initialBoard[3].equals(player) && this.initialBoard[4].equals(player) && this.initialBoard[5].equals(player))
+            return true;
+        else if (this.initialBoard[6].equals(player) && this.initialBoard[7].equals(player) && this.initialBoard[8].equals(player))
+            return true;
+        else if (this.initialBoard[0].equals(player) && this.initialBoard[3].equals(player) && this.initialBoard[6].equals(player))
+            return true;
+        else if (this.initialBoard[1].equals(player) && this.initialBoard[4].equals(player) && this.initialBoard[7].equals(player))
+            return true;
+        else if (this.initialBoard[2].equals(player) && this.initialBoard[5].equals(player) && this.initialBoard[8].equals(player))
+            return true;
+        else if (this.initialBoard[0].equals(player) && this.initialBoard[4].equals(player) && this.initialBoard[8].equals(player))
+            return true;
+        else if (this.initialBoard[6].equals(player) && this.initialBoard[4].equals(player) && this.initialBoard[2].equals(player))
+            return true;
+        else return false;
+    }
+
+    public boolean checkGame() {
+        if (hasSpace()) {
+            // check X if has 3
+            if (hasWon("X") && !hasWon("O")) {
+                System.out.println("X wins");
+                return true;
+            }
+            // check O if has 3
+            else if (hasWon("O") && !hasWon("X")) {
+                System.out.println("O wins");
+                return true;
+            }
+            // else game not finished
+            else if (countP("X") - countP("O") >= 0) System.out.println("Game not finished");
+            else System.out.println("Impossible");
+        } else {
+            // check X if has 3
+            if (hasWon("X")) {
+                System.out.println("X wins");
+                return true;
+            }
+            // check O if has 3
+            else if (hasWon("O")) {
+                System.out.println("O wins");
+                return true;
+            }
+            // draw+
+            else if ((countP("X") == 3 && countP("O") == 3)
+                    || (countP("X") - countP("O") > 1)
+                    || (countP("O") - countP("X") > 1)) System.out.println("Impossible");
+            else {
+                System.out.println("Draw");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void play() {
+        while (true) {
+            System.out.println("Enter the coordinates: ");
+            String location = sc.nextLine();
+            String[] locationArray = location.split(" ");
+
+            if (!isNumber(locationArray[0]) || !isNumber(locationArray[1])) {
+                System.out.println("You should enter numbers!");
+                continue;
+            }
+
+            int y = Integer.parseInt(locationArray[0]);
+            int x = Integer.parseInt(locationArray[1]);
+
+            if (x < 1 || x > 3 || y < 1 || y > 3) {
+                System.out.println("Coordinates should be from 1 to 3!");
+                continue;
+            }
+
+
+            int index = x - 1 + ((y - 1) * 3);
+            if (!this.initialBoard[index].equals("_")) {
+                System.out.println("This cell is occupied! Choose another one!");
+                continue;
+            }
+
+            if (countP("X") > countP("O")) {
+                turn = "O";
+            } else if (countP("X") < countP("O")) {
+                turn = "X";
+            } else {
+                turn = "X";
+            }
+            this.initialBoard[index] = this.turn;
+            printBoard();
+            if (checkGame()) break;
+        }
+
+    }
+
+
 }
+
 public class Main {
     public static void main(String[] args) {
         // write your code here
         TicTacToe ticTacToe = new TicTacToe();
         ticTacToe.askBoard();
+        ticTacToe.printBoard();
+        ticTacToe.play();
 
     }
 }
