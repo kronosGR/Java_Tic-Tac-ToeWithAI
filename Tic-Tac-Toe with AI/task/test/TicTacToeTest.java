@@ -20,7 +20,7 @@ public class TicTacToeTest extends StageTest<String> {
 
         if (!printedGrid.equals(emptyGrid)) {
             return CheckResult.wrong("After starting the program you should print an empty grid!\n" +
-                "Correct empty grid:\n" + emptyGrid);
+                    "Correct empty grid:\n" + emptyGrid);
         }
 
         if (!output.toLowerCase().contains("enter the coordinates:")) {
@@ -34,13 +34,12 @@ public class TicTacToeTest extends StageTest<String> {
 
         if (!gridAfterMove.equals(correctGridAfterMove)) {
             return CheckResult.wrong("After making the move wrong grid was printed.\n" +
-                "Your grid:\n" + gridAfterMove + "\n" +
-                "Correct grid:\n" + correctGridAfterMove);
+                    "Your grid:\n" + gridAfterMove + "\n" +
+                    "Correct grid:\n" + correctGridAfterMove);
         }
 
 
-
-        if (!output.toLowerCase().replace("'", "\"") .contains("making move level \"easy\"")) {
+        if (!output.toLowerCase().replace("'", "\"").contains("making move level \"easy\"")) {
             return CheckResult.wrong("After entering a cell coordinates you should print:\nMaking move level \"easy\"");
         }
 
@@ -84,8 +83,8 @@ public class TicTacToeTest extends StageTest<String> {
 
             if (!gameGrid.equals(tempGrid)) {
                 return CheckResult.wrong("After making move (" + nextMove + ") the game grid is wrong!\n" +
-                    "Your gird\n" + gameGrid + "\n" +
-                    "Correct grid\n" + tempGrid);
+                        "Your gird\n" + gameGrid + "\n" +
+                        "Correct grid\n" + tempGrid);
             }
 
             if (gameGrid.getGameState() != GameState.NOT_FINISHED)

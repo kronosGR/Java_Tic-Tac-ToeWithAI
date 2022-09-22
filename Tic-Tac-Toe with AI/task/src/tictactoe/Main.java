@@ -1,14 +1,15 @@
 package tictactoe;
 
+import java.util.Random;
 import java.util.Scanner;
 
 class TicTacToe {
 
-    final String SpaceRead = "_";
+    final String SpaceRead = " ";
     final String SpaceWrite = " ";
     private String[] initialBoard;
     private Scanner sc;
-    private String turn;
+    private String turn = "X";
 
     private String[] getInitialBoard() {
         return initialBoard;
@@ -21,6 +22,7 @@ class TicTacToe {
 
     public TicTacToe() {
         sc = new Scanner(System.in);
+        initialBoard = new String[]{" ", " ", " ", " ", " ", " ", " ", " ", " "};
     }
 
     public void printBoard() {
@@ -41,10 +43,10 @@ class TicTacToe {
         System.out.println("---------");
     }
 
-    public void askBoard() {
-        System.out.print("Enter the cells: ");
-        initialBoard = sc.nextLine().split("");
-    }
+//    public void askBoard() {
+//        System.out.print("Enter the cells: ");
+//        initialBoard = sc.nextLine().split("");
+//    }
 
     public static boolean isNumber(String str) {
         if (str == null) {
@@ -93,6 +95,20 @@ class TicTacToe {
         else return false;
     }
 
+    private void AIturn() {
+        // find empty
+        Random random = new Random();
+        // repeat until is not occupied
+        while (true) {
+            int possible = random.nextInt(9);
+            if (initialBoard[possible] != "X" || initialBoard[possible] != " ") {
+                initialBoard[possible] = turn;
+                System.out.println("Making move level \"easy\"");
+                break;
+            }
+        }
+    }
+
     public boolean checkGame() {
         if (hasSpace()) {
             // check X if has 3
@@ -106,8 +122,8 @@ class TicTacToe {
                 return true;
             }
             // else game not finished
-            else if (countP("X") - countP("O") >= 0) System.out.println("Game not finished");
-            else System.out.println("Impossible");
+            // else if (countP("X") - countP("O") >= 0) System.out.println("Game not finished");
+            // else System.out.println("Impossible");
         } else {
             // check X if has 3
             if (hasWon("X")) {
@@ -120,15 +136,23 @@ class TicTacToe {
                 return true;
             }
             // draw+
-            else if ((countP("X") == 3 && countP("O") == 3)
-                    || (countP("X") - countP("O") > 1)
-                    || (countP("O") - countP("X") > 1)) System.out.println("Impossible");
+//            else if ((countP("X") == 3 && countP("O") == 3)
+//                    || (countP("X") - countP("O") > 1)
+//                    || (countP("O") - countP("X") > 1)) System.out.println("Impossible");
             else {
                 System.out.println("Draw");
                 return true;
             }
         }
         return false;
+    }
+
+    private void changeTurn() {
+        if (turn.equals("X")) {
+            turn = "O";
+        } else {
+            turn = "X";
+        }
     }
 
     public void play() {
@@ -152,19 +176,19 @@ class TicTacToe {
 
 
             int index = x - 1 + ((y - 1) * 3);
-            if (!this.initialBoard[index].equals("_")) {
+            if (!this.initialBoard[index].equals(SpaceRead)) {
                 System.out.println("This cell is occupied! Choose another one!");
                 continue;
             }
 
-            if (countP("X") > countP("O")) {
-                turn = "O";
-            } else if (countP("X") < countP("O")) {
-                turn = "X";
-            } else {
-                turn = "X";
-            }
+
             this.initialBoard[index] = this.turn;
+            printBoard();
+            changeTurn();
+
+            this.AIturn();
+            changeTurn();
+
             printBoard();
             if (checkGame()) break;
         }
@@ -178,7 +202,6 @@ public class Main {
     public static void main(String[] args) {
         // write your code here
         TicTacToe ticTacToe = new TicTacToe();
-        ticTacToe.askBoard();
         ticTacToe.printBoard();
         ticTacToe.play();
 
