@@ -3,24 +3,54 @@ import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
 
+import java.util.List;
+
 
 public class TicTacToeTest extends StageTest<String> {
 
     int[] easyAiMoves = new int[9];
+
+    @DynamicTest(order = 0)
+    CheckResult testBadParameters() {
+
+        TestedProgram program = new TestedProgram();
+        program.start();
+
+        String output = program.execute("start");
+        if (!output.toLowerCase().contains("bad parameters")) {
+            return CheckResult.wrong("After entering start command with wrong parameters you should print 'Bad parameters!' and ask to enter a command again!");
+        }
+
+        output = program.execute("start easy");
+        if (!output.toLowerCase().contains("bad parameters")) {
+            return CheckResult.wrong("After entering start command with wrong parameters you should print 'Bad parameters!' and ask to enter a command again!");
+        }
+
+        program.execute("exit");
+
+        if (!program.isFinished()) {
+            return CheckResult.wrong("After entering 'exit' command you should stop the program!");
+        }
+
+        return CheckResult.correct();
+    }
+
 
     @DynamicTest(order = 1)
     CheckResult testGridOutput() {
 
         TestedProgram program = new TestedProgram();
 
-        String output = program.start();
+        program.start();
+
+        String output = program.execute("start user easy");
 
         Grid printedGrid = Grid.fromOutput(output);
         Grid emptyGrid = Grid.fromLine("_________");
 
         if (!printedGrid.equals(emptyGrid)) {
             return CheckResult.wrong("After starting the program you should print an empty grid!\n" +
-                    "Correct empty grid:\n" + emptyGrid);
+                "Correct empty grid:\n" + emptyGrid);
         }
 
         if (!output.toLowerCase().contains("enter the coordinates:")) {
@@ -34,10 +64,9 @@ public class TicTacToeTest extends StageTest<String> {
 
         if (!gridAfterMove.equals(correctGridAfterMove)) {
             return CheckResult.wrong("After making the move wrong grid was printed.\n" +
-                    "Your grid:\n" + gridAfterMove + "\n" +
-                    "Correct grid:\n" + correctGridAfterMove);
+                "Your grid:\n" + gridAfterMove + "\n" +
+                "Correct grid:\n" + correctGridAfterMove);
         }
-
 
         if (!output.toLowerCase().replace("'", "\"").contains("making move level \"easy\"")) {
             return CheckResult.wrong("After entering a cell coordinates you should print:\nMaking move level \"easy\"");
@@ -83,8 +112,8 @@ public class TicTacToeTest extends StageTest<String> {
 
             if (!gameGrid.equals(tempGrid)) {
                 return CheckResult.wrong("After making move (" + nextMove + ") the game grid is wrong!\n" +
-                        "Your gird\n" + gameGrid + "\n" +
-                        "Correct grid\n" + tempGrid);
+                    "Your gird\n" + gameGrid + "\n" +
+                    "Correct grid\n" + tempGrid);
             }
 
             if (gameGrid.getGameState() != GameState.NOT_FINISHED)
@@ -100,6 +129,8 @@ public class TicTacToeTest extends StageTest<String> {
     CheckResult checkEasyAi() {
         TestedProgram program = new TestedProgram();
         program.start();
+
+        program.execute("start user easy");
 
         String output = program.execute("2 2");
 
@@ -180,6 +211,22 @@ public class TicTacToeTest extends StageTest<String> {
         if (!isEasyNotMovingLikeMedium) {
             return CheckResult.wrong("Looks like your Easy level AI doesn't make a random move!");
         }
+        return CheckResult.correct();
+    }
+
+
+    @DynamicTest(order = 6)
+    CheckResult checkEasyVsEasy() {
+
+        TestedProgram program = new TestedProgram();
+        program.start();
+
+        String output = program.execute("start easy easy");
+
+        List<Grid> gridList = Grid.allGridsFromOutput(output);
+
+        Grid.checkGridSequence(gridList);
+
         return CheckResult.correct();
     }
 }

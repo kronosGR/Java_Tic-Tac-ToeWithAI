@@ -1,5 +1,6 @@
 package tictactoe;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -10,6 +11,8 @@ class TicTacToe {
     private String[] initialBoard;
     private Scanner sc;
     private String turn = "X";
+
+    private String[] menuOptions = new String[]{"user", "easy"};
 
     private String[] getInitialBoard() {
         return initialBoard;
@@ -155,7 +158,28 @@ class TicTacToe {
         }
     }
 
-    public void play() {
+    public void start() {
+        while (true) {
+            System.out.println("Input command: ");
+            String cmd1 = sc.next();
+
+            if (cmd1.equals("exit")) {
+                break;
+            }
+
+            String cmd2 = sc.next();
+            String cmd3 = sc.next();
+
+
+            if (!Arrays.stream(menuOptions).toList().contains(cmd2) && !Arrays.stream(menuOptions).toList().contains(cmd3)) {
+                System.out.println("Bad parameters!");
+            }
+
+
+        }
+    }
+
+    private void play() {
         while (true) {
             System.out.println("Enter the coordinates: ");
             String location = sc.nextLine();
@@ -202,8 +226,7 @@ public class Main {
     public static void main(String[] args) {
         // write your code here
         TicTacToe ticTacToe = new TicTacToe();
-        ticTacToe.printBoard();
-        ticTacToe.play();
+        ticTacToe.start();
 
     }
 }
