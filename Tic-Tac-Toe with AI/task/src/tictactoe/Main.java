@@ -25,6 +25,10 @@ class TicTacToe {
 
     public TicTacToe() {
         sc = new Scanner(System.in);
+        this.resetBoard();
+    }
+
+    private void resetBoard() {
         initialBoard = new String[]{" ", " ", " ", " ", " ", " ", " ", " ", " "};
     }
 
@@ -104,12 +108,13 @@ class TicTacToe {
         // repeat until is not occupied
         while (true) {
             int possible = random.nextInt(9);
-            if (initialBoard[possible] != "X" || initialBoard[possible] != " ") {
+            if (initialBoard[possible] == " ") {
                 initialBoard[possible] = turn;
                 System.out.println("Making move level \"easy\"");
                 break;
             }
         }
+        printBoard();
     }
 
     public boolean checkGame() {
@@ -161,60 +166,87 @@ class TicTacToe {
     public void start() {
         while (true) {
             System.out.println("Input command: ");
-            String cmd1 = sc.next();
+            String line = sc.nextLine();
+            String[] lineA = line.split(" ");
 
+            String cmd1 = lineA[0];
             if (cmd1.equals("exit")) {
                 break;
             }
 
-            String cmd2 = sc.next();
-            String cmd3 = sc.next();
-
-
-            if (!Arrays.stream(menuOptions).toList().contains(cmd2) && !Arrays.stream(menuOptions).toList().contains(cmd3)) {
+            if (lineA.length < 3) {
                 System.out.println("Bad parameters!");
+                continue;
             }
 
+            String cmd2 = lineA[1];
+            String cmd3 = lineA[2];
+
+
+            boolean pl1 = false;
+            boolean pl2 = false;
+            if (cmd2.equals("user")) pl1 = true;
+            if (cmd3.equals("user")) pl2 = true;
+
+            play(pl1, pl2);
 
         }
     }
 
-    private void play() {
+    private void humanPlay(String turn) {
+        System.out.println("Enter the coordinates: ");
+        String location = sc.nextLine();
+        String[] locationArray = location.split(" ");
+
+        if (!isNumber(locationArray[0]) || !isNumber(locationArray[1])) {
+            System.out.println("You should enter numbers!");
+            return;
+        }
+
+        int y = Integer.parseInt(locationArray[0]);
+        int x = Integer.parseInt(locationArray[1]);
+
+        if (x < 1 || x > 3 || y < 1 || y > 3) {
+            System.out.println("Coordinates should be from 1 to 3!");
+            return;
+        }
+        int index = x - 1 + ((y - 1) * 3);
+        if (!this.initialBoard[index].equals(SpaceRead)) {
+            System.out.println("This cell is occupied! Choose another one!");
+            return;
+        }
+
+
+        this.initialBoard[index] = turn;
+        printBoard();
+    }
+
+    /**
+     * Start the game, Main game loop
+     *
+     * @param player1 if true is human
+     * @param player2 if true is human
+     */
+    private void play(boolean player1, boolean player2) {
+
+        this.resetBoard();
+        this.printBoard();
         while (true) {
-            System.out.println("Enter the coordinates: ");
-            String location = sc.nextLine();
-            String[] locationArray = location.split(" ");
-
-            if (!isNumber(locationArray[0]) || !isNumber(locationArray[1])) {
-                System.out.println("You should enter numbers!");
-                continue;
+            if (player1) {
+                humanPlay(this.turn);
+            } else {
+                this.AIturn();
             }
-
-            int y = Integer.parseInt(locationArray[0]);
-            int x = Integer.parseInt(locationArray[1]);
-
-            if (x < 1 || x > 3 || y < 1 || y > 3) {
-                System.out.println("Coordinates should be from 1 to 3!");
-                continue;
-            }
-
-
-            int index = x - 1 + ((y - 1) * 3);
-            if (!this.initialBoard[index].equals(SpaceRead)) {
-                System.out.println("This cell is occupied! Choose another one!");
-                continue;
-            }
-
-
-            this.initialBoard[index] = this.turn;
-            printBoard();
-            changeTurn();
-
-            this.AIturn();
-            changeTurn();
-
-            printBoard();
             if (checkGame()) break;
+            changeTurn();
+
+            if (player2) {
+                humanPlay(this.turn);
+            } else {
+                this.AIturn();
+            }
+            if (checkGame()) break;
+            changeTurn();
         }
 
     }
