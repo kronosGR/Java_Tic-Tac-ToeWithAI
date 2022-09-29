@@ -23,6 +23,13 @@
             <option value="$PROJECT_DIR$/Topics/Getters and setters/Choose a pair of getter and setter" />
             <option value="$PROJECT_DIR$/Topics/Getters and setters/Getting the fullname" />
             <option value="$PROJECT_DIR$/Topics/Getters and setters/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Multiple constructors/Class instantiation" />
+            <option value="$PROJECT_DIR$/Topics/Multiple constructors/Entanglement" />
+            <option value="$PROJECT_DIR$/Topics/Multiple constructors/Movie" />
+            <option value="$PROJECT_DIR$/Topics/Multiple constructors/Phone" />
+            <option value="$PROJECT_DIR$/Topics/Multiple constructors/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Overloading/Overloading methods" />
+            <option value="$PROJECT_DIR$/Topics/Overloading/Theory" />
             <option value="$PROJECT_DIR$/Topics/Package/Binary search" />
             <option value="$PROJECT_DIR$/Topics/Package/Package features" />
             <option value="$PROJECT_DIR$/Topics/Package/Theory" />
@@ -30,6 +37,8 @@
             <option value="$PROJECT_DIR$/Topics/Random/Find the seed" />
             <option value="$PROJECT_DIR$/Topics/Random/Gaussian random numbers" />
             <option value="$PROJECT_DIR$/Topics/Random/Theory" />
+            <option value="$PROJECT_DIR$/Topics/The keyword super/Bank account" />
+            <option value="$PROJECT_DIR$/Topics/The keyword super/Theory" />
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>

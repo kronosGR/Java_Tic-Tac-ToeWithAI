@@ -7,12 +7,22 @@ import java.util.Scanner;
 class TicTacToe {
 
     final String SpaceRead = " ";
-    final String SpaceWrite = " ";
     private String[] initialBoard;
     private Scanner sc;
     private String turn = "X";
 
-    private String[] menuOptions = new String[]{"user", "easy"};
+//    private String[] menuOptions = new String[]{"user", "easy" };
+
+    private int[][] winningRows = {
+            {0, 1, 2},
+            {3, 4, 5},
+            {6, 7, 8},
+            {0, 3, 6},
+            {1, 4, 7},
+            {2, 5, 8},
+            {0, 4, 8},
+            {6, 4, 2}
+    };
 
     private String[] getInitialBoard() {
         return initialBoard;
@@ -82,6 +92,7 @@ class TicTacToe {
         return false;
     }
 
+
     public boolean hasWon(String player) {
         if (this.initialBoard[0].equals(player) && this.initialBoard[1].equals(player) && this.initialBoard[2].equals(player))
             return true;
@@ -102,17 +113,81 @@ class TicTacToe {
         else return false;
     }
 
-    private void AIturn() {
+    private int checkForTwo(String player) {
+        int index = -1;
+        for (int i = 0; i < winningRows.length; i++) {
+            int count = 0;
+            for (int x = 0; x < winningRows[i].length; x++) {
+                if (this.initialBoard[winningRows[i][x]].equals(player)) {
+                    count++;
+                }
+            }
+            if (count == 2) {
+                index = i;
+                break;
+            }
+        }
+
+        return index;
+    }
+
+    private void AIMedium() {
+        // check for possible win
+        String enemy = "";
+        if (this.turn.equals("X")) {
+            enemy = "O";
+        } else {
+            enemy = "X";
+        }
+
+        int empty = -1;
+        if (this.checkForTwo(this.turn) > -1) {
+            // find the empty from the winningRows[index] and play this one
+            int[] winArray = winningRows[this.checkForTwo(this.turn)];
+            for (int i = 0; i < winArray.length; i++) {
+                if (this.initialBoard[winArray[i]].equals(SpaceRead)) {
+                    this.initialBoard[winArray[i]] = this.turn;
+                    break;
+                }
+            }
+        } else if (this.checkForTwo(enemy) > -1) {
+            // find the empty for the opponent like above and play this one
+            int[] winArray = winningRows[this.checkForTwo(enemy)];
+            for (int i = 0; i < winArray.length; i++) {
+                if (this.initialBoard[winArray[i]].equals(SpaceRead)) {
+                    this.initialBoard[winArray[i]] = this.turn;
+                    break;
+                }
+            }
+        } else {
+            // play random
+            this.AIEasy();
+        }
+    }
+
+    private void AIEasy() {
         // find empty
         Random random = new Random();
         // repeat until is not occupied
         while (true) {
             int possible = random.nextInt(9);
-            if (initialBoard[possible] == " ") {
+            if (initialBoard[possible].equals(SpaceRead)) {
                 initialBoard[possible] = turn;
-                System.out.println("Making move level \"easy\"");
                 break;
             }
+        }
+    }
+
+    private void AIturn(String level) {
+        switch (level) {
+            case "easy":
+                this.AIEasy();
+                System.out.println("Making move level \"easy\"");
+                break;
+            case "medium":
+                this.AIMedium();
+                System.out.println("Making move level \"medium\"");
+                break;
         }
         printBoard();
     }
@@ -181,14 +256,22 @@ class TicTacToe {
 
             String cmd2 = lineA[1];
             String cmd3 = lineA[2];
+            String level = "";
 
+            if (cmd2.equals("easy") || cmd2.equals("medium")) {
+                level = cmd2;
+            }
+            if (cmd3.equals("easy") || cmd3.equals("medium")) {
+                level = cmd3;
+            }
 
             boolean pl1 = false;
             boolean pl2 = false;
             if (cmd2.equals("user")) pl1 = true;
             if (cmd3.equals("user")) pl2 = true;
 
-            play(pl1, pl2);
+
+            play(pl1, pl2, level);
 
         }
     }
@@ -227,7 +310,7 @@ class TicTacToe {
      * @param player1 if true is human
      * @param player2 if true is human
      */
-    private void play(boolean player1, boolean player2) {
+    private void play(boolean player1, boolean player2, String level) {
 
         this.resetBoard();
         this.printBoard();
@@ -235,7 +318,7 @@ class TicTacToe {
             if (player1) {
                 humanPlay(this.turn);
             } else {
-                this.AIturn();
+                this.AIturn(level);
             }
             if (checkGame()) break;
             changeTurn();
@@ -243,7 +326,7 @@ class TicTacToe {
             if (player2) {
                 humanPlay(this.turn);
             } else {
-                this.AIturn();
+                this.AIturn(level);
             }
             if (checkGame()) break;
             changeTurn();
