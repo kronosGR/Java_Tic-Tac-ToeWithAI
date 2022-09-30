@@ -117,12 +117,16 @@ class TicTacToe {
         int index = -1;
         for (int i = 0; i < winningRows.length; i++) {
             int count = 0;
+            boolean hasSpace = false;
             for (int x = 0; x < winningRows[i].length; x++) {
                 if (this.initialBoard[winningRows[i][x]].equals(player)) {
                     count++;
                 }
+                if (this.initialBoard[winningRows[i][x]].equals(SpaceRead)) {
+                    hasSpace = true;
+                }
             }
-            if (count == 2) {
+            if (count == 2 && hasSpace) {
                 index = i;
                 break;
             }
