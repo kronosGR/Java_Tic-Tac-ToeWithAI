@@ -4,14 +4,17 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
+ class Move {
+    int index;
+}
+
+
 class TicTacToe {
 
     final String SpaceRead = " ";
     private String[] initialBoard;
     private Scanner sc;
     private String turn = "X";
-
-//    private String[] menuOptions = new String[]{"user", "easy" };
 
     private int[][] winningRows = {
             {0, 1, 2},
@@ -93,7 +96,7 @@ class TicTacToe {
     }
 
 
-    public boolean hasWon(String player) {
+    private boolean hasWon(String player) {
         if (this.initialBoard[0].equals(player) && this.initialBoard[1].equals(player) && this.initialBoard[2].equals(player))
             return true;
         else if (this.initialBoard[3].equals(player) && this.initialBoard[4].equals(player) && this.initialBoard[5].equals(player))
@@ -111,6 +114,22 @@ class TicTacToe {
         else if (this.initialBoard[6].equals(player) && this.initialBoard[4].equals(player) && this.initialBoard[2].equals(player))
             return true;
         else return false;
+    }
+
+    private boolean winning(String player) {
+        if ((this.initialBoard[0] == player && this.initialBoard[1] == player && this.initialBoard[2] == player) ||
+                (this.initialBoard[3] == player && this.initialBoard[4] == player && this.initialBoard[5] == player) ||
+                (this.initialBoard[6] == player && this.initialBoard[7] == player && this.initialBoard[8] == player) ||
+                (this.initialBoard[0] == player && this.initialBoard[3] == player && this.initialBoard[6] == player) ||
+                (this.initialBoard[1] == player && this.initialBoard[4] == player && this.initialBoard[7] == player) ||
+                (this.initialBoard[2] == player && this.initialBoard[5] == player && this.initialBoard[8] == player) ||
+                (this.initialBoard[0] == player && this.initialBoard[4] == player && this.initialBoard[8] == player) ||
+                (this.initialBoard[2] == player && this.initialBoard[4] == player && this.initialBoard[6] == player)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private int checkForTwo(String player) {
@@ -137,12 +156,7 @@ class TicTacToe {
 
     private void AIMedium() {
         // check for possible win
-        String enemy = "";
-        if (this.turn.equals("X")) {
-            enemy = "O";
-        } else {
-            enemy = "X";
-        }
+        String enemy = getEnemy(this.turn);
 
         int empty = -1;
         if (this.checkForTwo(this.turn) > -1) {
@@ -169,6 +183,16 @@ class TicTacToe {
         }
     }
 
+    private String getEnemy(String turn) {
+        String enemy;
+        if (turn.equals("X")) {
+            enemy = "O";
+        } else {
+            enemy = "X";
+        }
+        return enemy;
+    }
+
     private void AIEasy() {
         // find empty
         Random random = new Random();
@@ -182,6 +206,77 @@ class TicTacToe {
         }
     }
 
+    private int evaluate() {
+        if (hasWon(this.turn)) {
+            return +10;
+        } else if (hasWon(this.getEnemy(this.turn))) {
+            return -10;
+        }
+        return 0;
+    }
+
+    boolean isMoveLeft(String[] board) {
+        for (int i = 0; i < board.length; i++) {
+            if (board[i] == SpaceRead) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int MiniMax(String board[], int depth, boolean isMax) {
+        int score = evaluate();
+
+        if (score == 10)
+            return score;
+        if (score == -10)
+            return score;
+        if (isMoveLeft(board) == false)
+            return 0;
+
+        if (isMax) {
+            int best = -1000;
+            for (int i = 0; i < board.length; i++) {
+                if (board[i] == SpaceRead) {
+                    board[i] = this.turn;
+                    best = Math.max(best, MiniMax(board, depth + 1, !isMax));
+                    board[i] = SpaceRead;
+                }
+            }
+            return best;
+        } else {
+            int best = 1000;
+            for (int i = 0; i < board.length; i++) {
+                if (board[i] == SpaceRead) {
+                    board[i] = getEnemy(this.turn);
+                    best = Math.min(best, MiniMax(board, depth + 1, !isMax));
+                    board[i] = SpaceRead;
+                }
+            }
+            return best;
+        }
+    }
+
+    private void AIHard(String[] board) {
+        int bestVal = -1000;
+        Move bestMove = new Move();
+        bestMove.index = -1;
+
+        for (int i = 0; i < board.length; i++) {
+            if (board[i] == SpaceRead) {
+                board[i] = this.turn;
+                int moveVal = MiniMax(board, 0, false);
+                board[i] = SpaceRead;
+                if (moveVal > bestVal) {
+                    bestMove.index = i;
+                    bestVal = moveVal;
+                }
+            }
+        }
+        this.initialBoard[bestMove.index] = this.turn;
+    }
+
+
     private void AIturn(String level) {
         switch (level) {
             case "easy":
@@ -191,6 +286,10 @@ class TicTacToe {
             case "medium":
                 this.AIMedium();
                 System.out.println("Making move level \"medium\"");
+                break;
+            case "hard":
+                this.AIHard(this.initialBoard);
+                System.out.println("Making move level \"hard\"");
                 break;
         }
         printBoard();
@@ -235,11 +334,7 @@ class TicTacToe {
     }
 
     private void changeTurn() {
-        if (turn.equals("X")) {
-            turn = "O";
-        } else {
-            turn = "X";
-        }
+        this.turn = getEnemy(this.turn);
     }
 
     public void start() {
@@ -262,10 +357,10 @@ class TicTacToe {
             String cmd3 = lineA[2];
             String level = "";
 
-            if (cmd2.equals("easy") || cmd2.equals("medium")) {
+            if (cmd2.equals("easy") || cmd2.equals("medium") || cmd2.equals("hard")) {
                 level = cmd2;
             }
-            if (cmd3.equals("easy") || cmd3.equals("medium")) {
+            if (cmd3.equals("easy") || cmd3.equals("medium") || cmd3.equals("hard")) {
                 level = cmd3;
             }
 
